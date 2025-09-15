@@ -1,7 +1,7 @@
 resource_group_name  = "cmaz-31zawnrd-mod3-rg"
 storage_account_name = "cmaz31zawnrdsa"
-vnet_name           = "cmaz-31zawnrd-mod3-vnet"
-location            = "East US"
+vnet_name            = "cmaz-31zawnrd-mod3-vnet"
+location             = "East US"
 
 vnet_address_space = ["10.0.0.0/16"]
 
