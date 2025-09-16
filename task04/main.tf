@@ -116,7 +116,7 @@ resource "azurerm_linux_virtual_machine" "main" {
       "sudo apt-get install -y nginx",
       "sudo systemctl start nginx",
       "sudo systemctl enable nginx",
-      "echo '<h1>Welcome to Nginx on Azure VM</h1>' | sudo tee /var/www/html/index.html",
+      "echo '<h1>Welcome to nginx!</h1>' | sudo tee /var/www/html/index.html",
       "echo '<p>Deployed by Terraform</p>' | sudo tee -a /var/www/html/index.html",
       "echo '<p>VM: ${var.vm_name}</p>' | sudo tee -a /var/www/html/index.html",
       "echo '<p>Creator: ${var.tags.Creator}</p>' | sudo tee -a /var/www/html/index.html",
