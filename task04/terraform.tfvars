@@ -12,7 +12,6 @@ vm_name             = "cmaz-31zawnrd-mod4-vm"
 vm_os_version       = "24_04-lts"
 vm_sku              = "Standard_F2s_v2"
 vm_username         = "azureuser"
-vm_password         = "P@ssw0rd123!"
 
 tags = {
   Creator = "behroz_ilhomov@epam.com"

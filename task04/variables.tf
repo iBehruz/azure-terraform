@@ -95,3 +95,9 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "ip_configuration_name" {
+  description = "Name of the NIC IP configuration"
+  type        = string
+  default     = "internal"
+}
