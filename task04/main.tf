@@ -24,7 +24,7 @@ resource "azurerm_public_ip" "main" {
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   allocation_method   = "Static"
-  sku                = "Standard"
+  sku                 = "Standard"
   domain_name_label   = var.domain_name_label
   tags                = var.tags
 }
@@ -42,11 +42,11 @@ resource "azurerm_network_security_rule" "http" {
   direction                   = "Inbound"
   access                      = "Allow"
   protocol                    = "Tcp"
-  source_port_range          = "*"
-  destination_port_range     = "80"
-  source_address_prefix      = "*"
-  destination_address_prefix = "*"
-  resource_group_name        = azurerm_resource_group.main.name
+  source_port_range           = "*"
+  destination_port_range      = "80"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+  resource_group_name         = azurerm_resource_group.main.name
   network_security_group_name = azurerm_network_security_group.main.name
 }
 
@@ -56,11 +56,11 @@ resource "azurerm_network_security_rule" "ssh" {
   direction                   = "Inbound"
   access                      = "Allow"
   protocol                    = "Tcp"
-  source_port_range          = "*"
-  destination_port_range     = "22"
-  source_address_prefix      = "*"
-  destination_address_prefix = "*"
-  resource_group_name        = azurerm_resource_group.main.name
+  source_port_range           = "*"
+  destination_port_range      = "22"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+  resource_group_name         = azurerm_resource_group.main.name
   network_security_group_name = azurerm_network_security_group.main.name
 }
 
@@ -120,7 +120,7 @@ resource "azurerm_linux_virtual_machine" "main" {
       "echo '<p>Deployed by Terraform</p>' | sudo tee -a /var/www/html/index.html",
       "echo '<p>VM: ${var.vm_name}</p>' | sudo tee -a /var/www/html/index.html",
       "echo '<p>Creator: ${var.tags.Creator}</p>' | sudo tee -a /var/www/html/index.html",
-      "sudo systemctl restart nginx"
+      "sudo systemctl restart nginx",
     ]
 
     connection {
