@@ -1,4 +1,4 @@
-﻿variable "name" {
+variable "name" {
   description = "Name of the App Service"
   type        = string
 }

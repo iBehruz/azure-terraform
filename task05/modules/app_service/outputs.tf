@@ -1,4 +1,4 @@
-﻿output "id" {
+output "id" {
   description = "The ID of the App Service"
   value       = azurerm_windows_web_app.this.id
 }

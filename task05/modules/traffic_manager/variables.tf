@@ -1,4 +1,4 @@
-﻿variable "profile_name" {
+variable "profile_name" {
   description = "Name of the Traffic Manager profile"
   type        = string
 }
@@ -43,7 +43,7 @@ variable "endpoints" {
   type = map(object({
     name               = string
     target_resource_id = string
-    location          = string
+    location           = string
   }))
 }
 

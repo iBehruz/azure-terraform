@@ -1,4 +1,4 @@
-﻿output "id" {
+output "id" {
   description = "The ID of the Traffic Manager profile"
   value       = azurerm_traffic_manager_profile.this.id
 }
@@ -15,7 +15,7 @@ output "fqdn" {
 
 output "endpoints" {
   description = "The endpoints of the Traffic Manager profile"
-  value       = {
+  value = {
     for key, endpoint in azurerm_traffic_manager_azure_endpoint.this : key => {
       id   = endpoint.id
       name = endpoint.name
