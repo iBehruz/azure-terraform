@@ -26,22 +26,42 @@ resource "azurerm_windows_web_app" "this" {
       dotnet_version = "v6.0"
     }
 
-    health_check_path = "/"
+    health_check_path                 = "/"
+    health_check_eviction_time_in_min = 2
 
     use_32_bit_worker = false
     http2_enabled     = true
     ftps_state        = "FtpsOnly"
 
     minimum_tls_version = "1.2"
+
+    default_documents = [
+      "Default.htm",
+      "Default.html",
+      "Default.asp",
+      "index.htm",
+      "index.html",
+      "iisstart.htm",
+      "default.aspx",
+      "index.php",
+      "hostingstart.html"
+    ]
   }
 
-  https_only = true
+  https_only = false
 
   app_settings = {
     "WEBSITE_RUN_FROM_PACKAGE"        = "1"
     "ASPNETCORE_ENVIRONMENT"          = "Production"
     "WEBSITE_ENABLE_SYNC_UPDATE_SITE" = "true"
+    "WEBSITE_NODE_DEFAULT_VERSION"    = "6.9.1"
   }
 
   tags = var.tags
+
+  lifecycle {
+    ignore_changes = [
+      app_settings["WEBSITE_RUN_FROM_PACKAGE"],
+    ]
+  }
 }

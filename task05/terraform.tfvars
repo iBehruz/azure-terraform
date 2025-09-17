@@ -74,8 +74,8 @@ traffic_manager = {
   resource_group_key = "rg3"
   routing_method     = "Performance"
   dns_ttl            = 60
-  monitor_protocol   = "HTTPS"
-  monitor_port       = 443
+  monitor_protocol   = "HTTP"
+  monitor_port       = 80
   monitor_path       = "/"
 }
 

@@ -9,18 +9,18 @@ resource "azurerm_traffic_manager_profile" "this" {
   }
 
   monitor_config {
-    protocol                     = var.monitor_protocol
-    port                         = var.monitor_port
+    protocol                     = "HTTP"
+    port                         = 80
     path                         = var.monitor_path
     interval_in_seconds          = 30
     timeout_in_seconds           = 10
     tolerated_number_of_failures = 3
+    expected_status_code_ranges  = ["200-202", "301-302"]
   }
 
   tags = var.tags
 }
 
-# Using for_each for Traffic Manager endpoints
 resource "azurerm_traffic_manager_azure_endpoint" "this" {
   for_each = var.endpoints
 
@@ -28,9 +28,7 @@ resource "azurerm_traffic_manager_azure_endpoint" "this" {
   profile_id         = azurerm_traffic_manager_profile.this.id
   target_resource_id = each.value.target_resource_id
 
-  # Priority based on key for predictable ordering
   priority = each.key == "app1" ? 1 : 2
 
-  # Weight for load balancing
   weight = 100
 }
