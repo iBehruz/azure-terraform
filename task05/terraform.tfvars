@@ -37,13 +37,13 @@ app_services = {
       {
         name       = "allow-ip"
         action     = "Allow"
-        priority   = 100
+        priority   = 200
         ip_address = "18.153.146.156/32"
       },
       {
         name        = "allow-tm"
         action      = "Allow"
-        priority    = 200
+        priority    = 100
         service_tag = "AzureTrafficManager"
       }
     ]
@@ -56,13 +56,13 @@ app_services = {
       {
         name       = "allow-ip"
         action     = "Allow"
-        priority   = 100
+        priority   = 200
         ip_address = "18.153.146.156/32"
       },
       {
         name        = "allow-tm"
         action      = "Allow"
-        priority    = 200
+        priority    = 100
         service_tag = "AzureTrafficManager"
       }
     ]
