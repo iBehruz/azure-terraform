@@ -1,56 +1,37 @@
-variable "resource_group_name" {
-  description = "The name of the resource group"
+﻿variable "name_prefix" {
+  description = "Prefix for resource names"
   type        = string
+  default     = "cmtr-31zawnrd-mod8"
 }
 
 variable "location" {
-  description = "The Azure region where resources will be created"
+  description = "Azure region"
   type        = string
-  default     = "East US"
+  default     = "West US"
 }
 
-variable "storage_account_name" {
-  description = "The name of the storage account"
+variable "acr_sku" {
+  description = "ACR SKU"
   type        = string
+  default     = "Basic"
 }
 
-variable "vnet_name" {
-  description = "The name of the virtual network"
+variable "git_pat" {
+  description = "Git personal access token"
   type        = string
+  sensitive   = true
 }
 
-variable "vnet_address_space" {
-  description = "The address space for the virtual network"
-  type        = list(string)
-  default     = ["10.0.0.0/16"]
-}
-
-variable "subnet_frontend_name" {
-  description = "The name of the frontend subnet"
+variable "git_repo_url" {
+  description = "Git repository URL"
   type        = string
-  default     = "frontend"
-}
-
-variable "subnet_frontend_prefix" {
-  description = "The address prefix for the frontend subnet"
-  type        = string
-  default     = "10.0.1.0/24"
-}
-
-variable "subnet_backend_name" {
-  description = "The name of the backend subnet"
-  type        = string
-  default     = "backend"
-}
-
-variable "subnet_backend_prefix" {
-  description = "The address prefix for the backend subnet"
-  type        = string
-  default     = "10.0.2.0/24"
+  default     = "https://github.com/username/repo.git"
 }
 
 variable "tags" {
-  description = "Tags to be applied to resources"
+  description = "Resource tags"
   type        = map(string)
-  default     = {}
+  default = {
+    Creator = "behroz_ilhomov@epam.com"
+  }
 }
