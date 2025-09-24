@@ -14,10 +14,10 @@ module "keyvault" {
   
   keyvault_name       = local.keyvault_name
   resource_group_name = azurerm_resource_group.main.name
-  location           = azurerm_resource_group.main.location
-  tenant_id          = data.azurerm_client_config.current.tenant_id
-  object_id          = data.azurerm_client_config.current.object_id
-  tags               = var.tags
+  location            = azurerm_resource_group.main.location
+  tenant_id           = data.azurerm_client_config.current.tenant_id
+  object_id           = data.azurerm_client_config.current.object_id
+  tags                = var.tags
 }
 
 # Redis Module
@@ -26,11 +26,11 @@ module "redis" {
   
   redis_name             = local.redis_name
   resource_group_name    = azurerm_resource_group.main.name
-  location              = azurerm_resource_group.main.location
-  key_vault_id          = module.keyvault.key_vault_id
-  redis_hostname_secret = local.redis_hostname_secret
-  redis_key_secret      = local.redis_key_secret
-  tags                  = var.tags
+  location               = azurerm_resource_group.main.location
+  key_vault_id           = module.keyvault.key_vault_id
+  redis_hostname_secret  = local.redis_hostname_secret
+  redis_key_secret       = local.redis_key_secret
+  tags                   = var.tags
   
   depends_on = [module.keyvault]
 }
@@ -41,12 +41,12 @@ module "acr" {
   
   acr_name            = local.acr_name
   resource_group_name = azurerm_resource_group.main.name
-  location           = azurerm_resource_group.main.location
-  sku                = var.acr_sku
-  app_image_name     = local.app_image_name
-  git_repo_url       = var.git_repo_url
-  git_pat            = var.git_pat
-  tags               = var.tags
+  location            = azurerm_resource_group.main.location
+  sku                 = var.acr_sku
+  app_image_name      = local.app_image_name
+  git_repo_url        = var.git_repo_url
+  git_pat             = var.git_pat
+  tags                = var.tags
 }
 
 # ACI Module
@@ -55,16 +55,16 @@ module "aci" {
   
   aci_name              = local.aci_name
   resource_group_name   = azurerm_resource_group.main.name
-  location             = azurerm_resource_group.main.location
-  acr_login_server     = module.acr.login_server
-  acr_username         = module.acr.admin_username
-  acr_password         = module.acr.admin_password
-  app_image_name       = local.app_image_name
-  image_tag            = local.image_tag
-  key_vault_id         = module.keyvault.key_vault_id
+  location              = azurerm_resource_group.main.location
+  acr_login_server      = module.acr.login_server
+  acr_username          = module.acr.admin_username
+  acr_password          = module.acr.admin_password
+  app_image_name        = local.app_image_name
+  image_tag             = local.image_tag
+  key_vault_id          = module.keyvault.key_vault_id
   redis_hostname_secret = local.redis_hostname_secret
   redis_key_secret      = local.redis_key_secret
-  tags                 = var.tags
+  tags                  = var.tags
   
   depends_on = [
     module.acr,
@@ -79,10 +79,10 @@ module "aks" {
   
   aks_name            = local.aks_name
   resource_group_name = azurerm_resource_group.main.name
-  location           = azurerm_resource_group.main.location
-  acr_id             = module.acr.acr_id
-  key_vault_id       = module.keyvault.key_vault_id
-  tags               = var.tags
+  location            = azurerm_resource_group.main.location
+  acr_id              = module.acr.acr_id
+  key_vault_id        = module.keyvault.key_vault_id
+  tags                = var.tags
   
   depends_on = [
     module.acr,
@@ -93,11 +93,11 @@ module "aks" {
 # Deploy K8s manifests
 resource "kubectl_manifest" "secret_provider" {
   yaml_body = templatefile("${path.module}/k8s-manifests/secret-provider.yaml.tftpl", {
-    aks_kv_access_identity_id = module.aks.kubelet_identity_object_id
-    kv_name                   = local.keyvault_name
-    redis_url_secret_name     = local.redis_hostname_secret
+    aks_kv_access_identity_id  = module.aks.kubelet_identity_object_id
+    kv_name                    = local.keyvault_name
+    redis_url_secret_name      = local.redis_hostname_secret
     redis_password_secret_name = local.redis_key_secret
-    tenant_id                 = data.azurerm_client_config.current.tenant_id
+    tenant_id                  = data.azurerm_client_config.current.tenant_id
   })
   
   depends_on = [module.aks]

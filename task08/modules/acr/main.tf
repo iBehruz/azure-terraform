@@ -17,7 +17,7 @@ resource "azurerm_container_registry_task" "build_task" {
   }
   
   docker_step {
-    dockerfile_path            = "application/Dockerfile"
+    dockerfile_path           = "application/Dockerfile"
     context_path              = "."
     context_access_token      = var.git_pat
     image_names               = ["${var.app_image_name}:latest"]

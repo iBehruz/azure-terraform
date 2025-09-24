@@ -5,7 +5,7 @@
   tenant_id                  = var.tenant_id
   soft_delete_retention_days = 7
   purge_protection_enabled   = false
-  sku_name                  = "standard"
+  sku_name                   = "standard"
   
   tags = var.tags
 }

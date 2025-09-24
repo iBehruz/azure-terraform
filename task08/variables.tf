@@ -31,7 +31,7 @@ variable "git_repo_url" {
 variable "tags" {
   description = "Resource tags"
   type        = map(string)
-  default = {
+  default     = {
     Creator = "behroz_ilhomov@epam.com"
   }
 }

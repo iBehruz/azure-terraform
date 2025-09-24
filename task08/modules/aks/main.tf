@@ -7,9 +7,9 @@
   default_node_pool {
     name                = "system"
     node_count          = 1
-    vm_size            = "Standard_D2ads_v5"
-    os_disk_type       = "Ephemeral"
-    os_disk_size_gb    = 48
+    vm_size             = "Standard_D2ads_v5"
+    os_disk_type        = "Ephemeral"
+    os_disk_size_gb     = 48
     enable_auto_scaling = false
   }
   
@@ -34,7 +34,7 @@
 resource "azurerm_role_assignment" "aks_acr_pull" {
   principal_id                     = azurerm_kubernetes_cluster.main.kubelet_identity[0].object_id
   role_definition_name             = "AcrPull"
-  scope                           = var.acr_id
+  scope                            = var.acr_id
   skip_service_principal_aad_check = true
 }
 
