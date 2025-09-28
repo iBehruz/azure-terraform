@@ -1,4 +1,4 @@
-﻿output "redis_id" {
+output "redis_id" {
   value = azurerm_redis_cache.main.id
 }
 

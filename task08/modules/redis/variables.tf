@@ -1,4 +1,4 @@
-﻿variable "redis_name" {
+variable "redis_name" {
   description = "Redis cache name"
   type        = string
 }

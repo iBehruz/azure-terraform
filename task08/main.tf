@@ -1,4 +1,4 @@
-﻿# Data source for current subscription
+# Data source for current subscription
 data "azurerm_client_config" "current" {}
 
 # Resource Group
@@ -11,7 +11,7 @@ resource "azurerm_resource_group" "main" {
 # Key Vault Module
 module "keyvault" {
   source = "./modules/keyvault"
-  
+
   keyvault_name       = local.keyvault_name
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
@@ -23,22 +23,22 @@ module "keyvault" {
 # Redis Module
 module "redis" {
   source = "./modules/redis"
-  
-  redis_name             = local.redis_name
-  resource_group_name    = azurerm_resource_group.main.name
-  location               = azurerm_resource_group.main.location
-  key_vault_id           = module.keyvault.key_vault_id
-  redis_hostname_secret  = local.redis_hostname_secret
-  redis_key_secret       = local.redis_key_secret
-  tags                   = var.tags
-  
+
+  redis_name            = local.redis_name
+  resource_group_name   = azurerm_resource_group.main.name
+  location              = azurerm_resource_group.main.location
+  key_vault_id          = module.keyvault.key_vault_id
+  redis_hostname_secret = local.redis_hostname_secret
+  redis_key_secret      = local.redis_key_secret
+  tags                  = var.tags
+
   depends_on = [module.keyvault]
 }
 
 # ACR Module
 module "acr" {
   source = "./modules/acr"
-  
+
   acr_name            = local.acr_name
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
@@ -52,7 +52,7 @@ module "acr" {
 # ACI Module
 module "aci" {
   source = "./modules/aci"
-  
+
   aci_name              = local.aci_name
   resource_group_name   = azurerm_resource_group.main.name
   location              = azurerm_resource_group.main.location
@@ -65,7 +65,7 @@ module "aci" {
   redis_hostname_secret = local.redis_hostname_secret
   redis_key_secret      = local.redis_key_secret
   tags                  = var.tags
-  
+
   depends_on = [
     module.acr,
     module.redis,
@@ -76,14 +76,14 @@ module "aci" {
 # AKS Module
 module "aks" {
   source = "./modules/aks"
-  
+
   aks_name            = local.aks_name
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   acr_id              = module.acr.acr_id
   key_vault_id        = module.keyvault.key_vault_id
   tags                = var.tags
-  
+
   depends_on = [
     module.acr,
     module.keyvault
@@ -99,7 +99,7 @@ resource "kubectl_manifest" "secret_provider" {
     redis_password_secret_name = local.redis_key_secret
     tenant_id                  = data.azurerm_client_config.current.tenant_id
   })
-  
+
   depends_on = [module.aks]
 }
 
@@ -109,14 +109,14 @@ resource "kubectl_manifest" "deployment" {
     app_image_name   = local.app_image_name
     image_tag        = local.image_tag
   })
-  
+
   wait_for {
     field {
       key   = "status.availableReplicas"
       value = "1"
     }
   }
-  
+
   depends_on = [
     kubectl_manifest.secret_provider,
     module.acr
@@ -125,7 +125,7 @@ resource "kubectl_manifest" "deployment" {
 
 resource "kubectl_manifest" "service" {
   yaml_body = file("${path.module}/k8s-manifests/service.yaml")
-  
+
   wait_for {
     field {
       key        = "status.loadBalancer.ingress.[0].ip"
@@ -133,7 +133,7 @@ resource "kubectl_manifest" "service" {
       value_type = "regex"
     }
   }
-  
+
   depends_on = [kubectl_manifest.deployment]
 }
 
@@ -142,6 +142,6 @@ data "kubernetes_service" "app" {
   metadata {
     name = "redis-flask-app-service"
   }
-  
+
   depends_on = [kubectl_manifest.service]
 }

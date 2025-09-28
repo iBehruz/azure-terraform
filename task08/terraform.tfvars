@@ -1,4 +1,4 @@
-﻿name_prefix  = "cmtr-31zawnrd-mod8"
+name_prefix  = "cmtr-31zawnrd-mod8"
 location     = "West US"
 acr_sku      = "Basic"
 git_repo_url = "https://github.com/username/repo.git"

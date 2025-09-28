@@ -1,4 +1,4 @@
-﻿variable "acr_name" {
+variable "acr_name" {
   description = "Container Registry name"
   type        = string
 }

@@ -1,4 +1,4 @@
-﻿output "fqdn" {
+output "fqdn" {
   value = azurerm_container_group.main.fqdn
 }
 

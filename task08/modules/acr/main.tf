@@ -1,10 +1,10 @@
-﻿resource "azurerm_container_registry" "main" {
+resource "azurerm_container_registry" "main" {
   name                = var.acr_name
   resource_group_name = var.resource_group_name
   location            = var.location
   sku                 = var.sku
   admin_enabled       = true
-  
+
   tags = var.tags
 }
 
@@ -15,21 +15,21 @@ resource "azurerm_container_registry_task" "build_task" {
     os           = "Linux"
     architecture = "amd64"
   }
-  
+
   docker_step {
-    dockerfile_path           = "application/Dockerfile"
-    context_path              = "."
-    context_access_token      = var.git_pat
-    image_names               = ["${var.app_image_name}:latest"]
+    dockerfile_path      = "application/Dockerfile"
+    context_path         = "."
+    context_access_token = var.git_pat
+    image_names          = ["${var.app_image_name}:latest"]
   }
-  
+
   source_trigger {
     name           = "commit"
     events         = ["commit"]
     source_type    = "Github"
     repository_url = var.git_repo_url
     branch         = "main"
-    
+
     authentication {
       token      = var.git_pat
       token_type = "PAT"

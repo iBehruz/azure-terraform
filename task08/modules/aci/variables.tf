@@ -1,4 +1,4 @@
-﻿variable "aci_name" {
+variable "aci_name" {
   description = "Container Instance name"
   type        = string
 }

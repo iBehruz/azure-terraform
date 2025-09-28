@@ -1,4 +1,4 @@
-﻿variable "aks_name" {
+variable "aks_name" {
   description = "AKS cluster name"
   type        = string
 }

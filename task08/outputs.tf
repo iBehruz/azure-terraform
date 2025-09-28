@@ -1,4 +1,4 @@
-﻿output "aci_fqdn" {
+output "aci_fqdn" {
   description = "FQDN of App in Azure Container Instance"
   value       = module.aci.fqdn
 }
