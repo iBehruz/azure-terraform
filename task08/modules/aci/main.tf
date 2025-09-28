@@ -1,4 +1,3 @@
-# Get Redis secrets from Key Vault
 data "azurerm_key_vault_secret" "redis_hostname" {
   name         = var.redis_hostname_secret
   key_vault_id = var.key_vault_id
@@ -19,12 +18,12 @@ resource "azurerm_container_group" "main" {
 
   container {
     name   = "app"
-    image  = "${var.acr_login_server}/${var.app_image_name}:${var.image_tag}"
+    image  = "mcr.microsoft.com/azuredocs/aks-helloworld:v1"
     cpu    = "1.0"
     memory = "1.5"
 
     ports {
-      port     = 8080
+      port     = 80
       protocol = "TCP"
     }
 

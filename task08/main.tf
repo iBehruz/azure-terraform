@@ -110,13 +110,6 @@ resource "kubectl_manifest" "deployment" {
     image_tag        = local.image_tag
   })
 
-  wait_for {
-    field {
-      key   = "status.availableReplicas"
-      value = "1"
-    }
-  }
-
   depends_on = [
     kubectl_manifest.secret_provider,
     module.acr

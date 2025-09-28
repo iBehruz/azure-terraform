@@ -4,8 +4,14 @@ resource "azurerm_container_registry" "main" {
   location            = var.location
   sku                 = var.sku
   admin_enabled       = true
+  tags                = var.tags
+}
 
-  tags = var.tags
+resource "null_resource" "import_image" {
+  provisioner "local-exec" {
+    command = "az acr import --name ${azurerm_container_registry.main.name} --source mcr.microsoft.com/azuredocs/aks-helloworld:v1 --image ${var.app_image_name}:latest"
+  }
+  depends_on = [azurerm_container_registry.main]
 }
 
 # Create task without source trigger to avoid webhook errors
