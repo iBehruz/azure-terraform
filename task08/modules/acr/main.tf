@@ -7,4 +7,4 @@ resource "azurerm_container_registry" "acr" {
   provisioner "local-exec" {
     command = "az acr build --image cmtr-31zawnrd-mod8-app:latest --registry ${azurerm_container_registry.acr.name} --file application/Dockerfile application/ "
   }
-}   
+}
