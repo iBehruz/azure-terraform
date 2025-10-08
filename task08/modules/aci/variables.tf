@@ -19,11 +19,13 @@ variable "acr_login_server" {
 }
 
 variable "acr_password" {
-  type = string
+  description = "acr_password"
+  type        = string
 }
 
 variable "acr_username" {
-  type = string
+  description = "acr_username"
+  type        = string
 }
 
 variable "key_vault_id" {

@@ -7,7 +7,7 @@ resource "azurerm_resource_group" "main" {
 
 module "keyvault" {
   source              = "./modules/keyvault"
-  name                = "cmtr-31zawnrd-mod8-kv"
+  name                = local.keyvault_name
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   tenant_id           = data.azurerm_client_config.current.tenant_id
@@ -16,7 +16,7 @@ module "keyvault" {
 
 module "redis" {
   source                = "./modules/redis"
-  name                  = "cmtr-31zawnrd-mod8-redis"
+  name                  = local.redis_name
   location              = azurerm_resource_group.main.location
   resource_group_name   = azurerm_resource_group.main.name
   redis_hostname_secret = local.redis_hostname_secret
@@ -29,6 +29,7 @@ module "acr" {
   source      = "./modules/acr"
   rg_location = azurerm_resource_group.main.location
   rg_name     = azurerm_resource_group.main.name
+  acr_name    = local.acr_name
 }
 
 module "aci" {

@@ -1,5 +1,5 @@
 resource "azurerm_container_registry" "acr" {
-  name                = "cmtr31zawnrdmod8cr"
+  name                = var.acr_name
   resource_group_name = var.rg_name
   location            = var.rg_location
   sku                 = "Basic"
@@ -23,4 +23,8 @@ resource "azurerm_container_registry_task" "acr_task" {
 
   timeout_in_seconds = 1800
   enabled            = true
+}
+
+resource "azurerm_container_registry_task_schedule_run_now" "acr_task_run" {
+  container_registry_task_id = azurerm_container_registry_task.acr_task.id
 }

@@ -1,19 +1,24 @@
 variable "name" {
-  type = string
+  description = "name"
+  type        = string
 }
 
 variable "location" {
-  type = string
+  description = "location"
+  type        = string
 }
 
 variable "resource_group_name" {
-  type = string
+  description = "resource_group_name"
+  type        = string
 }
 
 variable "tenant_id" {
-  type = string
+  description = "tenant_id"
+  type        = string
 }
 
 variable "object_id" {
-  type = string
+  description = "object_id"
+  type        = string
 }

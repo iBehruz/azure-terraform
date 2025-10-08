@@ -29,7 +29,6 @@ resource "azurerm_kubernetes_cluster" "main" {
   tags = var.tags
 }
 
-# Role assignment for ACR pull
 resource "azurerm_role_assignment" "aks_acr_pull" {
   principal_id                     = azurerm_kubernetes_cluster.main.kubelet_identity[0].object_id
   role_definition_name             = "AcrPull"
@@ -37,7 +36,6 @@ resource "azurerm_role_assignment" "aks_acr_pull" {
   skip_service_principal_aad_check = true
 }
 
-# Key Vault access policy for AKS
 resource "azurerm_key_vault_access_policy" "aks" {
   key_vault_id = var.key_vault_id
   tenant_id    = azurerm_kubernetes_cluster.main.identity[0].tenant_id

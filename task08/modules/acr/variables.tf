@@ -8,3 +8,8 @@ variable "rg_name" {
   type        = string
   description = "Group name"
 }
+
+variable "acr_name" {
+  type        = string
+  description = "acr_name"
+}
