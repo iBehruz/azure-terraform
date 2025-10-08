@@ -15,7 +15,7 @@ resource "azurerm_container_group" "main" {
   os_type             = "Linux"
   dns_name_label      = var.aci_name
   sku                 = "Standard"
-  //
+
   container {
     name   = "app"
     image  = "${var.acr_login_server}/cmtr-31zawnrd-mod8-app:latest"
