@@ -69,6 +69,14 @@ module "aks" {
   ]
 }
 
+provider "kubectl" {
+  host                   = module.aks.kube_config.host
+  client_certificate     = base64decode(module.aks.kube_config.client_certificate)
+  client_key             = base64decode(module.aks.kube_config.client_key)
+  cluster_ca_certificate = base64decode(module.aks.kube_config.cluster_ca_certificate)
+}
+
+
 resource "kubectl_manifest" "secret_provider" {
   yaml_body = templatefile("${path.module}/k8s-manifests/secret-provider.yaml.tftpl", {
     aks_kv_access_identity_id  = module.aks.kubelet_identity_object_id
