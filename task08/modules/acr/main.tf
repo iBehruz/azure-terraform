@@ -17,7 +17,7 @@ resource "azurerm_container_registry_task" "acr_task" {
   docker_step {
     context_path         = "https://iBehruz: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@github.com/iBehruz/azure-terraform.git"
     context_access_token = "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"
-    dockerfile_path      = "application/Dockerfile"
+    dockerfile_path      = "task08/application/Dockerfile"
     image_names          = ["cmtr-31zawnrd-mod8-app:latest"]
   }
 
