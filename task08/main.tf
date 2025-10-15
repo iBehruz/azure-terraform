@@ -53,6 +53,23 @@ module "aci" {
   ]
 }
 
+
+
+data "azurerm_kubernetes_cluster" "main" {
+  depends_on          = [module.aks]
+  name                = local.aks_name
+  resource_group_name = azurerm_resource_group.main.name
+}
+
+provider "kubectl" {
+  host                   = data.azurerm_kubernetes_cluster.main.kube_config.0.host
+  client_certificate     = base64decode(data.azurerm_kubernetes_cluster.main.kube_config.0.client_certificate)
+  client_key             = base64decode(data.azurerm_kubernetes_cluster.main.kube_config.0.client_key)
+  cluster_ca_certificate = base64decode(data.azurerm_kubernetes_cluster.main.kube_config.0.cluster_ca_certificate)
+  load_config_file       = false
+  apply_retry_count      = 4
+}
+
 module "aks" {
   source = "./modules/aks"
 
@@ -68,14 +85,6 @@ module "aks" {
     module.keyvault
   ]
 }
-
-provider "kubectl" {
-  host                   = module.aks.host
-  client_certificate     = base64decode(module.aks.client_certificate)
-  client_key             = base64decode(module.aks.client_key)
-  cluster_ca_certificate = base64decode(module.aks.cluster_ca_certificate)
-}
-
 
 resource "kubectl_manifest" "secret_provider" {
   yaml_body = templatefile("${path.module}/k8s-manifests/secret-provider.yaml.tftpl", {
