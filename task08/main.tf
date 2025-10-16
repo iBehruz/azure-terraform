@@ -92,6 +92,22 @@ resource "time_sleep" "wait_for_aks" {
   create_duration = "60s"
 }
 
+resource "null_resource" "get_kubeconfig" {
+  provisioner "local-exec" {
+    command = <<EOT
+      az aks get-credentials \
+        --resource-group ${var.resource_group_name} \
+        --name ${local.aks_name} \
+        --overwrite-existing
+    EOT
+  }
+
+  triggers = {
+    always_run = timestamp()
+  }
+}
+
+
 resource "kubectl_manifest" "secret_provider" {
   provider = kubectl.alekc
   yaml_body = templatefile("${path.module}/k8s-manifests/secret-provider.yaml.tftpl", {
@@ -103,6 +119,7 @@ resource "kubectl_manifest" "secret_provider" {
   })
 
   depends_on = [time_sleep.wait_for_aks]
+
 }
 
 resource "kubectl_manifest" "deployment" {
@@ -113,10 +130,16 @@ resource "kubectl_manifest" "deployment" {
     image_tag        = local.image_tag
   })
 
+  timeouts {
+    create = "5m"
+  }
+
   depends_on = [
     kubectl_manifest.secret_provider,
-    module.acr
+    module.acr,
+    null_resource.get_kubeconfig
   ]
+
 }
 
 resource "kubectl_manifest" "service" {
