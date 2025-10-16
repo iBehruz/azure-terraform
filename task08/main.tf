@@ -62,11 +62,13 @@ data "azurerm_kubernetes_cluster" "main" {
 }
 
 provider "kubectl" {
+  alias                  = "alekc"
   host                   = data.azurerm_kubernetes_cluster.main.kube_config.0.host
   client_certificate     = base64decode(data.azurerm_kubernetes_cluster.main.kube_config.0.client_certificate)
   client_key             = base64decode(data.azurerm_kubernetes_cluster.main.kube_config.0.client_key)
   cluster_ca_certificate = base64decode(data.azurerm_kubernetes_cluster.main.kube_config.0.cluster_ca_certificate)
   apply_retry_count      = 10
+  load_config_file       = false
 }
 
 module "aks" {
@@ -91,6 +93,7 @@ resource "time_sleep" "wait_for_aks" {
 }
 
 resource "kubectl_manifest" "secret_provider" {
+  provider = kubectl.alekc
   yaml_body = templatefile("${path.module}/k8s-manifests/secret-provider.yaml.tftpl", {
     aks_kv_access_identity_id  = module.aks.kubelet_identity_object_id
     kv_name                    = local.keyvault_name
@@ -103,6 +106,7 @@ resource "kubectl_manifest" "secret_provider" {
 }
 
 resource "kubectl_manifest" "deployment" {
+  provider = kubectl.alekc
   yaml_body = templatefile("${path.module}/k8s-manifests/deployment.yaml.tftpl", {
     acr_login_server = module.acr.login_server
     app_image_name   = local.app_image_name
@@ -116,6 +120,7 @@ resource "kubectl_manifest" "deployment" {
 }
 
 resource "kubectl_manifest" "service" {
+  provider  = kubectl.alekc
   yaml_body = file("${path.module}/k8s-manifests/service.yaml")
 
   wait_for {
