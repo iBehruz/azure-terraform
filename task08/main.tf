@@ -92,22 +92,6 @@ resource "time_sleep" "wait_for_aks" {
   create_duration = "60s"
 }
 
-resource "null_resource" "get_kubeconfig" {
-  provisioner "local-exec" {
-    command = <<EOT
-      az aks get-credentials \
-        --resource-group ${var.resource_group_name} \
-        --name ${local.aks_name} \
-        --overwrite-existing
-    EOT
-  }
-
-  triggers = {
-    always_run = timestamp()
-  }
-}
-
-
 resource "kubectl_manifest" "secret_provider" {
   provider = kubectl.alekc
   yaml_body = templatefile("${path.module}/k8s-manifests/secret-provider.yaml.tftpl", {
