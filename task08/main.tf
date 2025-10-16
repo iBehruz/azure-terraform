@@ -67,7 +67,7 @@ provider "kubectl" {
   client_key             = base64decode(data.azurerm_kubernetes_cluster.main.kube_config.0.client_key)
   cluster_ca_certificate = base64decode(data.azurerm_kubernetes_cluster.main.kube_config.0.cluster_ca_certificate)
   load_config_file       = false
-  apply_retry_count      = 4
+  apply_retry_count      = 10
 }
 
 module "aks" {
@@ -86,6 +86,11 @@ module "aks" {
   ]
 }
 
+resource "time_sleep" "wait_for_aks" {
+  depends_on      = [module.aks]
+  create_duration = "60s"
+}
+
 resource "kubectl_manifest" "secret_provider" {
   yaml_body = templatefile("${path.module}/k8s-manifests/secret-provider.yaml.tftpl", {
     aks_kv_access_identity_id  = module.aks.kubelet_identity_object_id
@@ -95,7 +100,7 @@ resource "kubectl_manifest" "secret_provider" {
     tenant_id                  = data.azurerm_client_config.current.tenant_id
   })
 
-  depends_on = [module.aks]
+  depends_on = [time_sleep.wait_for_aks]
 }
 
 resource "kubectl_manifest" "deployment" {
