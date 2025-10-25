@@ -53,24 +53,6 @@ module "aci" {
   ]
 }
 
-
-
-data "azurerm_kubernetes_cluster" "main" {
-  depends_on          = [module.aks]
-  name                = local.aks_name
-  resource_group_name = azurerm_resource_group.main.name
-}
-
-provider "kubectl" {
-  alias                  = "alekc"
-  host                   = data.azurerm_kubernetes_cluster.main.kube_config.0.host
-  client_certificate     = base64decode(data.azurerm_kubernetes_cluster.main.kube_config.0.client_certificate)
-  client_key             = base64decode(data.azurerm_kubernetes_cluster.main.kube_config.0.client_key)
-  cluster_ca_certificate = base64decode(data.azurerm_kubernetes_cluster.main.kube_config.0.cluster_ca_certificate)
-  apply_retry_count      = 10
-  load_config_file       = false
-}
-
 module "aks" {
   source = "./modules/aks"
 
@@ -87,10 +69,24 @@ module "aks" {
   ]
 }
 
-resource "time_sleep" "wait_for_aks" {
-  depends_on      = [module.aks]
-  create_duration = "60s"
+
+data "azurerm_kubernetes_cluster" "main" {
+  depends_on          = [module.aks]
+  name                = local.aks_name
+  resource_group_name = azurerm_resource_group.main.name
 }
+
+provider "kubectl" {
+  alias                  = "alekc"
+  host                   = data.azurerm_kubernetes_cluster.main.kube_config.0.host
+  client_certificate     = base64decode(data.azurerm_kubernetes_cluster.main.kube_config.0.client_certificate)
+  client_key             = base64decode(data.azurerm_kubernetes_cluster.main.kube_config.0.client_key)
+  cluster_ca_certificate = base64decode(data.azurerm_kubernetes_cluster.main.kube_config.0.cluster_ca_certificate)
+  apply_retry_count      = 5
+}
+
+
+
 
 resource "kubectl_manifest" "secret_provider" {
   provider = kubectl.alekc
@@ -114,14 +110,10 @@ resource "kubectl_manifest" "deployment" {
     image_tag        = local.image_tag
   })
 
-  timeouts {
-    create = "5m"
-  }
 
   depends_on = [
     kubectl_manifest.secret_provider,
-    module.acr,
-    null_resource.get_kubeconfig
+    module.acr
   ]
 
 }
