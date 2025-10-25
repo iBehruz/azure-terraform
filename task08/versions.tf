@@ -1,9 +1,9 @@
 terraform {
   backend "azurerm" {
-    resource_group_name = "rg-adolearn-31zawnrd-tfstate"
+    resource_group_name  = "rg-adolearn-31zawnrd-tfstate"
     storage_account_name = "tfstate31zawnrdsa"
-    container_name = "task8"
-    key = "terraform.tfstate"
+    container_name       = "task8"
+    key                  = "terraform.tfstate"
   }
 
   required_version = ">= 1.5.7"
