@@ -18,19 +18,14 @@ resource "azurerm_kubernetes_cluster" "main" {
 
   key_vault_secrets_provider {
     secret_rotation_enabled  = true
-    secret_rotation_interval = "2m"
-  }
-
-  network_profile {
-    network_plugin    = "kubenet"
-    load_balancer_sku = "standard"
+    secret_rotation_interval = "2h"
   }
 
   tags = var.tags
 }
 
 resource "azurerm_role_assignment" "aks_acr_pull" {
-  principal_id                     = azurerm_kubernetes_cluster.main.kubelet_identity[0].object_id
+  principal_id                     = var.object_id
   role_definition_name             = "AcrPull"
   scope                            = var.acr_id
   skip_service_principal_aad_check = true
@@ -38,9 +33,20 @@ resource "azurerm_role_assignment" "aks_acr_pull" {
 
 resource "azurerm_key_vault_access_policy" "aks" {
   key_vault_id = var.key_vault_id
-  tenant_id    = azurerm_kubernetes_cluster.main.identity[0].tenant_id
-  object_id    = azurerm_kubernetes_cluster.main.key_vault_secrets_provider[0].secret_identity[0].object_id
+  tenant_id    = var.tenant_id
+  object_id    = var.object_id
 
-  secret_permissions = ["Get", "List"]
+  key_permissions = [
+    "Create",
+    "Get",
+  ]
+
+  secret_permissions = [
+    "Set",
+    "Get",
+    "Delete",
+    "Purge",
+    "Recover"
+  ]
 }
 

@@ -61,6 +61,8 @@ module "aks" {
   location            = azurerm_resource_group.main.location
   acr_id              = module.acr.acr_id
   key_vault_id        = module.keyvault.key_vault_id
+  tenant_id           = data.azurerm_client_config.current.tenant_id
+  object_id           = data.azurerm_client_config.current.object_id
   tags                = var.tags
 
   depends_on = [
@@ -86,8 +88,6 @@ provider "kubectl" {
 }
 
 
-
-
 resource "kubectl_manifest" "secret_provider" {
   provider = kubectl.alekc
   yaml_body = templatefile("${path.module}/k8s-manifests/secret-provider.yaml.tftpl", {
@@ -97,9 +97,6 @@ resource "kubectl_manifest" "secret_provider" {
     redis_password_secret_name = local.redis_key_secret
     tenant_id                  = data.azurerm_client_config.current.tenant_id
   })
-
-  depends_on = [time_sleep.wait_for_aks]
-
 }
 
 resource "kubectl_manifest" "deployment" {
@@ -115,7 +112,6 @@ resource "kubectl_manifest" "deployment" {
     kubectl_manifest.secret_provider,
     module.acr
   ]
-
 }
 
 resource "kubectl_manifest" "service" {

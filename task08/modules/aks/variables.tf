@@ -23,6 +23,16 @@ variable "key_vault_id" {
   type        = string
 }
 
+variable "tenant_id" {
+  description = "Tenant ID"
+  type        = string
+}
+
+variable "object_id" {
+  description = "Object ID"
+  type        = string
+}
+
 variable "tags" {
   description = "Resource tags"
   type        = map(string)
