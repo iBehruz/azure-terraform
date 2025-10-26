@@ -73,9 +73,8 @@ module "aks" {
 
 
 data "azurerm_kubernetes_cluster" "main" {
-  depends_on          = [module.aks]
-  name                = local.aks_name
-  resource_group_name = azurerm_resource_group.main.name
+  name                = module.aks.azurerm_kubernetes_cluster_name
+  resource_group_name = module.aks.resource_group_name
 }
 
 provider "kubectl" {
