@@ -134,7 +134,7 @@ resource "kubectl_manifest" "service" {
     }
   }
 
-  depends_on = [kubectl_manifest.deployment, module.aks,]
+  depends_on = [kubectl_manifest.deployment, module.aks, ]
 }
 
 data "kubernetes_service" "app" {
