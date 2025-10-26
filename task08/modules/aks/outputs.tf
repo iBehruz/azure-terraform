@@ -3,6 +3,9 @@ output "client_certificate" { value = azurerm_kubernetes_cluster.main.kube_confi
 output "client_key" { value = azurerm_kubernetes_cluster.main.kube_config[0].client_key }
 output "cluster_ca_certificate" { value = azurerm_kubernetes_cluster.main.kube_config[0].cluster_ca_certificate }
 
+output "azurerm_kubernetes_cluster_name" {
+  value = azurerm_kubernetes_cluster.main.name
+}
 
 output "kubelet_identity_object_id" {
   value = azurerm_kubernetes_cluster.main.key_vault_secrets_provider[0].secret_identity[0].object_id

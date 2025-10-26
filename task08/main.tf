@@ -74,7 +74,7 @@ module "aks" {
 
 data "azurerm_kubernetes_cluster" "main" {
   name                = module.aks.azurerm_kubernetes_cluster_name
-  resource_group_name = module.aks.resource_group_name
+  resource_group_name = azurerm_resource_group.main.name
 }
 
 provider "kubectl" {
