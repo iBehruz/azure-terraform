@@ -75,6 +75,10 @@ module "aks" {
 data "azurerm_kubernetes_cluster" "main" {
   name                = module.aks.azurerm_kubernetes_cluster_name
   resource_group_name = azurerm_resource_group.main.name
+
+  depends_on = [
+    module.aks
+  ]
 }
 
 provider "kubectl" {
@@ -96,6 +100,10 @@ resource "kubectl_manifest" "secret_provider" {
     redis_password_secret_name = local.redis_key_secret
     tenant_id                  = data.azurerm_client_config.current.tenant_id
   })
+
+  depends_on = [
+    module.aks
+  ]
 }
 
 resource "kubectl_manifest" "deployment" {
