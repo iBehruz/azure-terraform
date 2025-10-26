@@ -66,7 +66,9 @@ module "aks" {
   tags                = var.tags
 
   depends_on = [
+    module.aci,
     module.acr,
+    module.redis,
     module.keyvault
   ]
 }
