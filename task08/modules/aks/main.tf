@@ -16,6 +16,9 @@ resource "azurerm_kubernetes_cluster" "main" {
     type = "SystemAssigned"
   }
 
+  role_based_access_control_enabled = true
+  local_account_disabled            = false
+
   key_vault_secrets_provider {
     secret_rotation_enabled  = true
     secret_rotation_interval = "2h"
