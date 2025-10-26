@@ -77,18 +77,15 @@ data "azurerm_kubernetes_cluster" "main" {
   resource_group_name = azurerm_resource_group.main.name
 }
 
-
 provider "kubectl" {
   alias                  = "alekc"
-  host                   = data.azurerm_kubernetes_cluster.main.kube_config[0].host
-  cluster_ca_certificate = base64decode(data.azurerm_kubernetes_cluster.main.kube_config[0].cluster_ca_certificate)
+  host                   = data.azurerm_kubernetes_cluster.main.kube_admin_config[0].host
+  cluster_ca_certificate = base64decode(data.azurerm_kubernetes_cluster.main.kube_admin_config[0].cluster_ca_certificate)
+  client_certificate     = base64decode(data.azurerm_kubernetes_cluster.main.kube_admin_config[0].client_certificate)
+  client_key             = base64decode(data.azurerm_kubernetes_cluster.main.kube_admin_config[0].client_key)
   load_config_file       = false
-  exec {
-    api_version = "client.authentication.k8s.io/v1beta1"
-    command     = "az"
-    args        = ["aks", "get-credentials", "--resource-group", var.resource_group_name, "--name", data.azurerm_kubernetes_cluster.main.name, "--admin", "--overwrite-existing"]
-  }
 }
+
 
 resource "kubectl_manifest" "secret_provider" {
   provider = kubectl.alekc
