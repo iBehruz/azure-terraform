@@ -75,7 +75,7 @@ resource "azurerm_subnet_route_table_association" "aks" {
   route_table_id = azurerm_route_table.aks.id
 }
 
-# Application Rule Collection
+# Application Rule Collection - USED DYNAMIC BLOCKS
 resource "azurerm_firewall_application_rule_collection" "aks" {
   name                = "aks-app-rules"
   azure_firewall_name = azurerm_firewall.main.name
@@ -83,61 +83,25 @@ resource "azurerm_firewall_application_rule_collection" "aks" {
   priority            = 100
   action              = "Allow"
 
-  rule {
-    name             = "allow-aks-required-fqdns"
-    source_addresses = ["*"]
+  dynamic "rule" {
+    for_each = var.application_rules
+    content {
+      name             = rule.value.name
+      source_addresses = rule.value.source_addresses
+      target_fqdns     = rule.value.target_fqdns
 
-    target_fqdns = [
-      "*.hcp.${var.location}.azmk8s.io",
-      "mcr.microsoft.com",
-      "*.data.mcr.microsoft.com",
-      "management.azure.com",
-      "login.microsoftonline.com",
-      "packages.microsoft.com",
-      "acs-mirror.azureedge.net",
-      "*.ubuntu.com",
-      "api.snapcraft.io",
-      "*.docker.io",
-      "production.cloudflare.docker.com"
-    ]
-
-    protocol {
-      port = "443"
-      type = "Https"
-    }
-
-    protocol {
-      port = "80"
-      type = "Http"
-    }
-  }
-
-  rule {
-    name             = "allow-docker-registry"
-    source_addresses = ["*"]
-
-    target_fqdns = [
-      "*.docker.io",
-      "docker.io",
-      "*.docker.com",
-      "registry-1.docker.io",
-      "auth.docker.io",
-      "production.cloudflare.docker.com"
-    ]
-
-    protocol {
-      port = "443"
-      type = "Https"
-    }
-
-    protocol {
-      port = "80"
-      type = "Http"
+      dynamic "protocol" {
+        for_each = rule.value.protocols
+        content {
+          port = protocol.value.port
+          type = protocol.value.type
+        }
+      }
     }
   }
 }
 
-# Network Rule Collection
+# Network Rule Collection - USED DYNAMIC BLOCKS
 resource "azurerm_firewall_network_rule_collection" "aks" {
   name                = "aks-net-rules"
   azure_firewall_name = azurerm_firewall.main.name
@@ -145,32 +109,20 @@ resource "azurerm_firewall_network_rule_collection" "aks" {
   priority            = 100
   action              = "Allow"
 
-  rule {
-    name                  = "allow-dns"
-    source_addresses      = ["*"]
-    destination_ports     = ["53"]
-    destination_addresses = ["*"]
-    protocols             = ["UDP"]
-  }
-
-  rule {
-    name              = "allow-ntp"
-    source_addresses  = ["*"]
-    destination_ports = ["123"]
-    destination_fqdns = ["ntp.ubuntu.com"]
-    protocols         = ["UDP"]
-  }
-
-  rule {
-    name                  = "allow-aks-tunnel"
-    source_addresses      = ["*"]
-    destination_ports     = ["9000", "22"]
-    destination_addresses = ["AzureCloud.${var.location}"]
-    protocols             = ["TCP"]
+  dynamic "rule" {
+    for_each = var.network_rules
+    content {
+      name                  = rule.value.name
+      source_addresses      = rule.value.source_addresses
+      destination_ports     = rule.value.destination_ports
+      destination_addresses = length(rule.value.destination_addresses) > 0 ? rule.value.destination_addresses : null
+      destination_fqdns     = length(rule.value.destination_fqdns) > 0 ? rule.value.destination_fqdns : null
+      protocols             = rule.value.protocols
+    }
   }
 }
 
-# NAT Rule Collection (for inbound traffic to NGINX)
+# NAT Rule Collection - USED DYNAMIC BLOCKS AND FOR_EACH
 resource "azurerm_firewall_nat_rule_collection" "nginx" {
   name                = "nginx-nat-rules"
   azure_firewall_name = azurerm_firewall.main.name
@@ -178,23 +130,16 @@ resource "azurerm_firewall_nat_rule_collection" "nginx" {
   priority            = 100
   action              = "Dnat"
 
-  rule {
-    name                  = "nginx-http"
-    source_addresses      = ["*"]
-    destination_ports     = ["80"]
-    destination_addresses = [azurerm_public_ip.firewall.ip_address]
-    translated_port       = 80
-    translated_address    = var.aks_loadbalancer_ip
-    protocols             = ["TCP"]
-  }
-
-  rule {
-    name                  = "nginx-https"
-    source_addresses      = ["*"]
-    destination_ports     = ["443"]
-    destination_addresses = [azurerm_public_ip.firewall.ip_address]
-    translated_port       = 443
-    translated_address    = var.aks_loadbalancer_ip
-    protocols             = ["TCP"]
+  dynamic "rule" {
+    for_each = var.nat_rules
+    content {
+      name                  = rule.value.name
+      source_addresses      = rule.value.source_addresses
+      destination_ports     = rule.value.destination_ports
+      destination_addresses = [azurerm_public_ip.firewall.ip_address]
+      translated_port       = rule.value.translated_port
+      translated_address    = var.aks_loadbalancer_ip
+      protocols             = rule.value.protocols
+    }
   }
 }
