@@ -46,12 +46,17 @@ resource "azurerm_firewall" "main" {
   sku_tier            = "Standard"
   zones               = ["1", "2", "3"]
   tags                = local.common_tags
+  dns_proxy_enabled   = true
+
 
   ip_configuration {
     name                 = "fw-ipconfig"
     subnet_id            = azurerm_subnet.firewall.id
     public_ip_address_id = azurerm_public_ip.firewall.id
   }
+
+
+
 }
 
 # Route Table
