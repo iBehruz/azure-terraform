@@ -77,7 +77,7 @@ resource "azurerm_subnet_route_table_association" "aks" {
 
 # Application Rule Collection - USED DYNAMIC BLOCKS
 resource "azurerm_firewall_application_rule_collection" "aks" {
-  name                = "aks-app-rules"
+  name                = local.app_rule_collection_name
   azure_firewall_name = azurerm_firewall.main.name
   resource_group_name = var.resource_group_name
   priority            = 100
@@ -103,7 +103,7 @@ resource "azurerm_firewall_application_rule_collection" "aks" {
 
 # Network Rule Collection - USED DYNAMIC BLOCKS
 resource "azurerm_firewall_network_rule_collection" "aks" {
-  name                = "aks-net-rules"
+  name                = local.net_rule_collection_name
   azure_firewall_name = azurerm_firewall.main.name
   resource_group_name = var.resource_group_name
   priority            = 100
@@ -124,7 +124,7 @@ resource "azurerm_firewall_network_rule_collection" "aks" {
 
 # NAT Rule Collection - USED DYNAMIC BLOCKS AND FOR_EACH
 resource "azurerm_firewall_nat_rule_collection" "nginx" {
-  name                = "nginx-nat-rules"
+  name                = local.nat_rule_collection_name
   azure_firewall_name = azurerm_firewall.main.name
   resource_group_name = var.resource_group_name
   priority            = 100
