@@ -1,4 +1,4 @@
-aks_loadbalancer_ip    = "48.194.103.60"
+aks_loadbalancer_ip    = "135.237.22.230"
 resource_prefix        = "cmtr-31zawnrd-mod9"
 location               = "East US"
 resource_group_name    = "cmtr-31zawnrd-mod9-rg"
