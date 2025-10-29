@@ -150,36 +150,3 @@ resource "azurerm_firewall_nat_rule_collection" "nginx" {
 
   depends_on = [azurerm_public_ip.firewall]
 }
-
-# Data source for AKS cluster
-data "azurerm_kubernetes_cluster" "aks" {
-  name                = var.aks_cluster_name
-  resource_group_name = var.resource_group_name
-
-  depends_on = [azurerm_public_ip.firewall]
-}
-
-# Data source for AKS NSG
-data "azurerm_network_security_group" "aks" {
-  name                = "aks-agentpool-${data.azurerm_kubernetes_cluster.aks.node_resource_group_id}-nsg"
-  resource_group_name = data.azurerm_kubernetes_cluster.aks.node_resource_group
-
-  depends_on = [azurerm_public_ip.firewall]
-}
-
-# NSG Rule to allow traffic from Firewall to Load Balancer
-resource "azurerm_network_security_rule" "allow_firewall_to_lb" {
-  name                        = "AllowAccessFromFirewallPublicIPToLoadBalancerIP"
-  priority                    = 400
-  direction                   = "Inbound"
-  access                      = "Allow"
-  protocol                    = "*"
-  source_port_range           = "*"
-  destination_port_range      = "80"
-  source_address_prefix       = azurerm_public_ip.firewall.ip_address
-  destination_address_prefix  = var.aks_loadbalancer_ip
-  resource_group_name         = data.azurerm_kubernetes_cluster.aks.node_resource_group
-  network_security_group_name = data.azurerm_network_security_group.aks.name
-
-  depends_on = [azurerm_firewall.main, azurerm_public_ip.firewall]
-}
