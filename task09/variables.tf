@@ -37,3 +37,8 @@ variable "firewall_subnet_prefix" {
   description = "Address prefix for Azure Firewall subnet"
   type        = string
 }
+
+variable "aks_cluster_name" {
+  description = "Name of the AKS cluster"
+  type        = string
+}

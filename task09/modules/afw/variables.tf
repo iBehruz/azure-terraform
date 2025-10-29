@@ -28,6 +28,11 @@ variable "aks_subnet_name" {
   type        = string
 }
 
+variable "aks_cluster_name" {
+  description = "Name of the AKS cluster"
+  type        = string
+}
+
 variable "aks_loadbalancer_ip" {
   description = "Public IP address of the AKS load balancer"
   type        = string

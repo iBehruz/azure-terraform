@@ -58,6 +58,14 @@ locals {
       destination_addresses = []
       destination_fqdns     = ["ntp.ubuntu.com"]
       protocols             = ["UDP"]
+    },
+    {
+      name                  = "allow-aks-tunnel"
+      source_addresses      = ["*"]
+      destination_ports     = ["9000", "22"]
+      destination_addresses = ["AzureCloud.${replace(lower(var.location), " ", "")}"]
+      destination_fqdns     = []
+      protocols             = ["TCP"]
     }
   ]
 

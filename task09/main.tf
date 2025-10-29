@@ -13,4 +13,5 @@ module "afw" {
   application_rules      = local.application_rules
   network_rules          = local.network_rules
   nat_rules              = local.nat_rules
+  aks_cluster_name       = var.aks_cluster_name
 }

@@ -54,17 +54,15 @@ resource "azurerm_firewall" "main" {
     subnet_id            = azurerm_subnet.firewall.id
     public_ip_address_id = azurerm_public_ip.firewall.id
   }
-
-
-
 }
 
 # Route Table
 resource "azurerm_route_table" "aks" {
-  name                = local.route_table_name
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  tags                = local.common_tags
+  name                          = local.route_table_name
+  location                      = var.location
+  resource_group_name           = var.resource_group_name
+  disable_bgp_route_propagation = false
+  tags                          = local.common_tags
 
   route {
     name                   = "to-internet-via-firewall"
@@ -72,14 +70,17 @@ resource "azurerm_route_table" "aks" {
     next_hop_type          = "VirtualAppliance"
     next_hop_in_ip_address = azurerm_firewall.main.ip_configuration[0].private_ip_address
   }
+
+  depends_on = [azurerm_firewall.main]
 }
 
 # Associate Route Table with AKS Subnet
 resource "azurerm_subnet_route_table_association" "aks" {
   subnet_id      = data.azurerm_subnet.aks.id
   route_table_id = azurerm_route_table.aks.id
-}
 
+  depends_on = [azurerm_route_table.aks]
+}
 # Application Rule Collection - USED DYNAMIC BLOCKS
 resource "azurerm_firewall_application_rule_collection" "aks" {
   name                = local.app_rule_collection_name
@@ -147,4 +148,35 @@ resource "azurerm_firewall_nat_rule_collection" "nginx" {
       protocols             = rule.value.protocols
     }
   }
+
+  depends_on = [azurerm_public_ip.firewall]
+}
+
+# Data source for AKS cluster
+data "azurerm_kubernetes_cluster" "aks" {
+  name                = split("-", var.resource_prefix)[3] == "mod9" ? "${var.resource_prefix}-aks" : var.aks_cluster_name
+  resource_group_name = var.resource_group_name
+}
+
+# Data source for AKS NSG
+data "azurerm_network_security_group" "aks" {
+  name                = "aks-agentpool-${data.azurerm_kubernetes_cluster.aks.node_resource_group_id}-nsg"
+  resource_group_name = data.azurerm_kubernetes_cluster.aks.node_resource_group
+}
+
+# NSG Rule to allow traffic from Firewall to Load Balancer
+resource "azurerm_network_security_rule" "allow_firewall_to_lb" {
+  name                        = "AllowAccessFromFirewallPublicIPToLoadBalancerIP"
+  priority                    = 400
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "*"
+  source_port_range           = "*"
+  destination_port_range      = "80"
+  source_address_prefix       = azurerm_public_ip.firewall.ip_address
+  destination_address_prefix  = var.aks_loadbalancer_ip
+  resource_group_name         = data.azurerm_kubernetes_cluster.aks.node_resource_group
+  network_security_group_name = data.azurerm_network_security_group.aks.name
+
+  depends_on = [azurerm_firewall.main, azurerm_public_ip.firewall]
 }

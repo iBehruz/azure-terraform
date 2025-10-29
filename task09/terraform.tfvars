@@ -6,3 +6,4 @@ vnet_name              = "cmtr-31zawnrd-mod9-vnet"
 vnet_address_space     = ["10.0.0.0/16"]
 aks_subnet_name        = "aks-snet"
 firewall_subnet_prefix = "10.0.1.0/24"
+aks_cluster_name       = "cmtr-31zawnrd-mod9-aks"
