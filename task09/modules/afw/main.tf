@@ -153,7 +153,7 @@ resource "azurerm_firewall_nat_rule_collection" "nginx" {
 
 # Data source for AKS cluster
 data "azurerm_kubernetes_cluster" "aks" {
-  name                = split("-", var.resource_prefix)[2] == "mod9" ? "${var.resource_prefix}-aks" : var.aks_cluster_name
+  name                = var.aks_cluster_name
   resource_group_name = var.resource_group_name
 }
 
