@@ -58,10 +58,10 @@ resource "azurerm_firewall" "main" {
 
 # Route Table
 resource "azurerm_route_table" "aks" {
-  name                          = local.route_table_name
-  location                      = var.location
-  resource_group_name           = var.resource_group_name
-  tags                          = local.common_tags
+  name                = local.route_table_name
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  tags                = local.common_tags
 
   route {
     name                   = "to-internet-via-firewall"
@@ -155,12 +155,16 @@ resource "azurerm_firewall_nat_rule_collection" "nginx" {
 data "azurerm_kubernetes_cluster" "aks" {
   name                = var.aks_cluster_name
   resource_group_name = var.resource_group_name
+
+  depends_on = [azurerm_public_ip.firewall]
 }
 
 # Data source for AKS NSG
 data "azurerm_network_security_group" "aks" {
   name                = "aks-agentpool-${data.azurerm_kubernetes_cluster.aks.node_resource_group_id}-nsg"
   resource_group_name = data.azurerm_kubernetes_cluster.aks.node_resource_group
+
+  depends_on = [azurerm_public_ip.firewall]
 }
 
 # NSG Rule to allow traffic from Firewall to Load Balancer
